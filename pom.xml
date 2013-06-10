@@ -11,7 +11,7 @@
   <description>An example to show how to use embedded mysql for unit test</description>
 
   <scm>
-    <url>https://githubcom/zhentao/maven-embedded-mysql</url>
+    <url>https://github.com/zhentao/maven-embedded-mysql</url>
     <connection>scm:git:git://github.com/zhentao/maven-embedded-mysql.git</connection>
     <developerConnection>scm:git:git@github.com:zhentao/maven-embedded-mysql.git</developerConnection>
   </scm>
