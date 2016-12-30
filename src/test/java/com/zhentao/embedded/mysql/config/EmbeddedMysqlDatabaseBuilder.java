@@ -1,10 +1,7 @@
 package com.zhentao.embedded.mysql.config;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
+import com.mysql.management.MysqldResource;
+import com.mysql.management.MysqldResourceI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -12,8 +9,11 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
-import com.mysql.management.MysqldResource;
-import com.mysql.management.MysqldResourceI;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class EmbeddedMysqlDatabaseBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(EmbeddedMysqlDatabaseBuilder.class);
@@ -69,6 +69,18 @@ public class EmbeddedMysqlDatabaseBuilder {
         databaseOptions.put(MysqldResourceI.PORT, Integer.toString(port));
 
         MysqldResource mysqldResource = new MysqldResource(new File(baseDatabaseDir, databaseName));
+        Class<?> mysqldResourceClass = mysqldResource.getClass();
+        try {
+            Field field = mysqldResourceClass.getDeclaredField("osName_osArch");
+            field.setAccessible(true);
+            if (field.get(mysqldResource).toString().startsWith("Win")) {
+                field.set(mysqldResource, "Win-x86");
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         mysqldResource.start("embedded-mysqld-thread-" + System.currentTimeMillis(), databaseOptions);
 
         if (!mysqldResource.isRunning()) {
